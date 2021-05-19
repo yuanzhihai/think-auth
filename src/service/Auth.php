@@ -23,11 +23,6 @@ class Auth
     protected $user;
 
     /**
-     * admin
-     * @var
-     */
-    protected $admin;
-    /**
      * 默认配置
      * @var array
      */
@@ -59,43 +54,6 @@ class Auth
         $this->user = Db::name($this->config['auth_user']);
     }
 
-    /**
-     * 检查是否登录
-     * @return bool
-     */
-    public function isLogin()
-    {
-        return !!$this->user();
-    }
-
-    /**
-     * 登录
-     * @param null $admin
-     * @return bool
-     * @throws \think\exception\DbException
-     */
-    public function login($admin)
-    {
-        if (is_numeric($admin)) {
-            $admin = $this->user->find($admin);
-        }
-        if ($admin) {
-            $this->session->set('admin_auth', $admin);
-            $this->session->set('admin_auth_sign', $this->data_auth_sign($admin));
-            return true;
-        }
-        return false;
-    }
-
-    /**
-     * 重新登录
-     * @return bool
-     * @throws \think\exception\DbException
-     */
-    public function refresh()
-    {
-        return $this->login($this->admin->id);
-    }
 
     /**
      * 白名单URL
@@ -109,32 +67,6 @@ class Auth
         return false;
     }
 
-    /**
-     * 退出
-     * @return bool
-     */
-    public function logout()
-    {
-        $this->session->delete('admin_auth');
-        $this->session->delete('admin_auth_sign');
-        $this->session->destroy();
-        $this->admin = null;
-        return true;
-    }
-
-    /**
-     * 当前登录用户
-     * @return mixed|null
-     */
-    public function user()
-    {
-        $admin_auth  = $this->session->get('admin_auth');
-        $auth_sign   = $this->session->get('admin_auth_sign');
-        $this->admin = !empty($this->admin) ? $this->admin : ($auth_sign === $this->data_auth_sign(
-            $admin_auth
-        ) ? $admin_auth : null);
-        return $this->admin;
-    }
 
     /**
      * /**
@@ -144,22 +76,12 @@ class Auth
      */
     public function is_administrator($uid = null)
     {
-        $uid = is_null($uid) ? $this->getUserId() : $uid;
         if (in_array($uid, $this->config['auth_admin'])) {
             return $uid;
         }
         return false;
     }
 
-    /**
-     * 获取用户id
-     * @return mixed
-     */
-    public function getUserId()
-    {
-        $admin = $this->user();
-        return $admin ? $admin->id : null;
-    }
 
     /**
      * 检查权限
@@ -326,20 +248,4 @@ class Auth
         return array_unique($authList);
     }
 
-    /**
-     * 数据签名
-     * @param $data
-     * @return string
-     */
-    protected function data_auth_sign($data)
-    {
-        //数据类型检测
-        if (!is_array($data)) {
-            $data = (array)$data;
-        }
-        ksort($data); //排序
-        $code = http_build_query($data); //url编码并生成query字符串
-        //生成签名
-        return sha1($code);
-    }
 }
