@@ -54,3 +54,16 @@ if (!function_exists('get_auth_roles')) {
         return \yzh52521\ThinkAuth\Auth::roles($uid);
     }
 }
+
+if (!function_exists('get_auth_all_roles')) {
+    /**
+     * 获取用户所有角色及权限数据
+     * @param $uid
+     * @return mixed
+     */
+    function get_auth_all_roles($uid)
+    {
+        return \yzh52521\ThinkAuth\Auth::allRoles($uid);
+    }
+}
+

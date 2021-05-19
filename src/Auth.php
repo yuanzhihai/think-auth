@@ -11,6 +11,7 @@ namespace yzh52521\ThinkAuth;
  * @method static check($name, $uid, $type = 1, $mode = 'url', $relation = 'or')
  * @method static rules($uid, $type = 1)
  * @method static roles($uid)
+ * @method static allRoles($uid)
  */
 class Auth
 {

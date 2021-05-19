@@ -187,6 +187,34 @@ class Auth
     }
 
     /**
+     * 获取用户所有角色及权限
+     * @param $uid
+     * @return mixed 用户所属用户组 ['uid'=>'用户ID', 'role_id'=>'用户组ID', 'role_name'=>'用户组名', 'rules'=>'用户组拥有的规则']
+     * @return array
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\DbException
+     * @throws \think\db\exception\ModelNotFoundException
+     */
+    public function allRoles($uid): array
+    {
+        static $groups = [];
+        if (isset($groups[$uid])) {
+            return $groups[$uid];
+        }
+        $role_user = RoleUser::with(['role', 'rules'])->where('user_id', $uid)->select();
+        foreach ($role_user as $val) {
+            $user_groups[] = [
+                'user_id'   => $val['user_id'],
+                'role_id'   => $val->role->id,
+                'role_name' => $val->role->title,
+                'rules'     => $val->rules
+            ];
+        }
+        $groups[$uid] = $user_groups ?: [];
+        return $groups[$uid];
+    }
+
+    /**
      * 获得权限列表
      * @param integer $uid 用户id
      * @param $type
@@ -228,7 +256,7 @@ class Auth
             foreach ($role->rules as $rule) {
                 $rule = $rule->toArray();
                 // 当规则为空或状态不为1时跳过
-                if (empty($rule) || $rule['status'] !== '1') {
+                if (empty($rule) || $rule['status'] !== 1) {
                     continue;
                 }
                 if (!empty($rule['condition'])) {
