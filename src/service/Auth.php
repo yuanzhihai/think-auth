@@ -59,7 +59,7 @@ class Auth
      * 白名单URL
      * @return bool
      */
-    public function optional()
+    protected function optional()
     {
         if (in_array(strtolower($this->request->rule()->getRoute()), $this->config['allow'])) {
             return true;
@@ -71,10 +71,10 @@ class Auth
     /**
      * /**
      * 检测当前用户是否为超级管理员
-     * @param null $uid
+     * @param $uid
      * @return false|mixed|null
      */
-    public function is_administrator($uid = null)
+    protected function is_administrator($uid)
     {
         if (in_array($uid, $this->config['auth_admin'])) {
             return $uid;
@@ -102,7 +102,7 @@ class Auth
             return true;
         }
         //检测超级管理员
-        if ($this->is_administrator()) {
+        if ($this->is_administrator($uid)) {
             return true;
         }
         //白名单
