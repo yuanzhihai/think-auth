@@ -2,16 +2,6 @@
 
 declare(strict_types=1);
 
-\think\Console::starting(
-    function (\think\Console $console) {
-        $console->addCommands(
-            [
-                'auth:config' => '\\think\\auth\\command\\AuthConfig'
-            ]
-        );
-    }
-);
-
 if (!function_exists('auth_check')) {
     /**
      * 权限检测快捷方法
@@ -24,7 +14,7 @@ if (!function_exists('auth_check')) {
      */
     function auth_check($name, $uid, $type = 1, $mode = 'url', $relation = 'or')
     {
-        return \think\Auth::check($name, $uid, $type, $mode, $relation);
+        return \yzh52521\ThinkAuth\Auth::check($name, $uid, $type, $mode, $relation);
     }
 }
 
@@ -37,7 +27,7 @@ if (!function_exists('get_auth_rules')) {
      */
     function get_auth_rules($uid, $type = 1)
     {
-        return \think\Auth::rules($uid, $type);
+        return \yzh52521\ThinkAuth\Auth::rules($uid, $type);
     }
 }
 
@@ -49,7 +39,7 @@ if (!function_exists('get_auth_role_ids')) {
      */
     function get_auth_role_ids($uid)
     {
-        return \think\Auth::roles($uid, 'role_id');
+        return \yzh52521\ThinkAuth\Auth::roles($uid, 'role_id');
     }
 }
 
@@ -61,6 +51,6 @@ if (!function_exists('get_auth_roles')) {
      */
     function get_auth_roles($uid)
     {
-        return \think\Auth::roles($uid);
+        return \yzh52521\ThinkAuth\Auth::roles($uid);
     }
 }
