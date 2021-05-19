@@ -24,7 +24,10 @@
     "think":{
       "config":{
         "auth": "src/config.php"
-      }
+      },
+      "services": [
+        "yzh52521\\ThinkAuth\\Service"
+      ]
     }
   }
 }
