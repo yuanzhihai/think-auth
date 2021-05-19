@@ -21,14 +21,22 @@ class Auth
      * @var
      */
     protected $user;
+
+    /**
+     * admin
+     * @var
+     */
+    protected $admin;
     /**
      * 默认配置
      * @var array
      */
     protected $config = [
-        'auth_on'   => 1, // 权限开关
-        'auth_type' => 1, // 认证方式，1为实时认证；2为登录认证。
-        'auth_user' => 'user', // 用户信息表
+        'auth_on'    => 1, // 权限开关
+        'auth_type'  => 1, // 认证方式，1为实时认证；2为登录认证。
+        'auth_user'  => 'user', // 用户信息表
+        'auth_admin' => ['1'],  //超级管理员id
+        'allow'      => ['login'] //白名单
     ];
 
     /**
@@ -45,9 +53,112 @@ class Auth
 
         $this->app     = $app ?: app();
         $this->request = $this->app->request;
+        $this->session = $this->app->session;
 
         // 初始化用户模型
         $this->user = Db::name($this->config['auth_user']);
+    }
+
+    /**
+     * 检查是否登录
+     * @return bool
+     */
+    public function isLogin()
+    {
+        return !!$this->user();
+    }
+
+    /**
+     * 登录
+     * @param null $admin
+     * @return bool
+     * @throws \think\exception\DbException
+     */
+    public function login($admin)
+    {
+        if (is_numeric($admin)) {
+            $admin = $this->user->find($admin);
+        }
+        if ($admin) {
+            $this->session->set('admin_auth', $admin);
+            $this->session->set('admin_auth_sign', $this->data_auth_sign($admin));
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * 重新登录
+     * @return bool
+     * @throws \think\exception\DbException
+     */
+    public function refresh()
+    {
+        return $this->login($this->admin->id);
+    }
+
+    /**
+     * 白名单URL
+     * @return bool
+     */
+    public function optional()
+    {
+        if (in_array(strtolower($this->request->rule()->getRoute()), $this->config['allow'])) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * 退出
+     * @return bool
+     */
+    public function logout()
+    {
+        $this->session->delete('admin_auth');
+        $this->session->delete('admin_auth_sign');
+        $this->session->destroy();
+        $this->admin = null;
+        return true;
+    }
+
+    /**
+     * 当前登录用户
+     * @return mixed|null
+     */
+    public function user()
+    {
+        $admin_auth  = $this->session->get('admin_auth');
+        $auth_sign   = $this->session->get('admin_auth_sign');
+        $this->admin = !empty($this->admin) ? $this->admin : ($auth_sign === $this->data_auth_sign(
+            $admin_auth
+        ) ? $admin_auth : null);
+        return $this->admin;
+    }
+
+    /**
+     * /**
+     * 检测当前用户是否为超级管理员
+     * @param null $uid
+     * @return false|mixed|null
+     */
+    public function is_administrator($uid = null)
+    {
+        $uid = is_null($uid) ? $this->getUserId() : $uid;
+        if (in_array($uid, $this->config['auth_admin'])) {
+            return $uid;
+        }
+        return false;
+    }
+
+    /**
+     * 获取用户id
+     * @return mixed
+     */
+    public function getUserId()
+    {
+        $admin = $this->user();
+        return $admin ? $admin->id : null;
     }
 
     /**
@@ -66,6 +177,14 @@ class Auth
     public function check($name, $uid, $type = 1, $mode = 'url', $relation = 'or')
     {
         if (!$this->config['auth_on']) {
+            return true;
+        }
+        //检测超级管理员
+        if ($this->is_administrator()) {
+            return true;
+        }
+        //白名单
+        if ($this->optional()) {
             return true;
         }
         // 获取用户需要验证的所有有效规则列表
@@ -159,8 +278,8 @@ class Auth
             return $_authList[$uid . $t];
         }
 
-        if (2 === $this->config['auth_type'] && $this->app->session->has('_auth_list_' . $uid . $t)) {
-            return $this->app->session->get('_auth_list_' . $uid . $t);
+        if (2 === $this->config['auth_type'] && $this->session->has('_auth_list_' . $uid . $t)) {
+            return $this->session->get('_auth_list_' . $uid . $t);
         }
 
         $roles = $this->roles($uid);
@@ -188,7 +307,6 @@ class Auth
                 if (!empty($rule['condition'])) {
                     //根据condition进行验证
                     $command = preg_replace('/\{(\w*?)\}/', '$user[\'\\1\']', $rule['condition']);
-                    //dump($command); //debug
                     @(eval('$condition=(' . $command . ');'));
                     if ($condition) {
                         $authList[] = strtolower($rule['name']);
@@ -202,9 +320,26 @@ class Auth
         $_authList[$uid . $t] = $authList;
         if (2 === $this->config['auth_type']) {
             //规则列表结果保存到session
-            $this->app->session->set('_auth_list_' . $uid . $t, $authList);
+            $this->session->set('_auth_list_' . $uid . $t, $authList);
         }
 
         return array_unique($authList);
+    }
+
+    /**
+     * 数据签名
+     * @param $data
+     * @return string
+     */
+    protected function data_auth_sign($data)
+    {
+        //数据类型检测
+        if (!is_array($data)) {
+            $data = (array)$data;
+        }
+        ksort($data); //排序
+        $code = http_build_query($data); //url编码并生成query字符串
+        //生成签名
+        return sha1($code);
     }
 }
