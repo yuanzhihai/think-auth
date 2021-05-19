@@ -14,7 +14,7 @@
   },
   "autoload": {
     "psr-4": {
-      "think\\": "src/"
+      "yzh52521\\ThinkAuth\\": "src/"
     },
     "files": [
       "src/helper.php"
