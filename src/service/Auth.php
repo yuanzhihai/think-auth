@@ -204,10 +204,9 @@ class Auth
         $role_user = RoleUser::with(['role', 'rules'])->where('user_id', $uid)->select();
         foreach ($role_user as $val) {
             $user_groups[] = [
-                'user_id'   => $val['user_id'],
-                'role_id'   => $val->role->id,
-                'role_name' => $val->role->title,
-                'rules'     => $val->rules
+                'user_id'  => $val['user_id'],
+                'role'  => $val->role,
+                'rules' => $val->rules
             ];
         }
         $groups[$uid] = $user_groups ?: [];
