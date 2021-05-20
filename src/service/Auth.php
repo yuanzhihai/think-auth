@@ -79,6 +79,9 @@ class Auth
         if (in_array($uid, $this->config['auth_admin'])) {
             return $uid;
         }
+        if ($this->hasRole($uid, '超级管理员')) {
+            return true;
+        }
         return false;
     }
 
@@ -184,6 +187,27 @@ class Auth
             return $role->column($field);
         }
         return $role->select();
+    }
+
+    /**
+     * 是否有此角色.
+     *
+     * @param $uid 用户ID
+     * @param string $role 角色名称
+     *
+     * @return bool
+     */
+    public function hasRole($uid, string $role)
+    {
+        $roles = $this->roles($uid);
+        if (empty($roles)) {
+            return false;
+        }
+        foreach ($roles as $v) {
+            if ($role == $v->role->title) {
+                return true;
+            }
+        }
     }
 
     /**
