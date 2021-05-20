@@ -66,4 +66,16 @@ if (!function_exists('get_auth_all_roles')) {
         return \yzh52521\ThinkAuth\Auth::allRoles($uid);
     }
 }
+if (!function_exists('has_role')) {
+    /**
+     * 是否有此角色.
+     * @param $uid
+     * @param $role
+     * @return mixed
+     */
+    function has_role($uid,$role)
+    {
+        return \yzh52521\ThinkAuth\Auth::hasRole($uid,$role);
+    }
+}
 
