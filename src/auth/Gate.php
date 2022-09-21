@@ -40,7 +40,7 @@ class Gate
      */
     protected function getRoles($user)
     {
-        $roles = (array)$user->getRoles();
+        $roles = $user->getRoles();
 
         return array_map( function ($role) {
             if (is_string( $role )) {

@@ -51,7 +51,7 @@ class Token implements Guard
         if (empty( $token )) {
             $header = $this->request->header( 'Authorization' );
             if (!empty( $header )) {
-                if (str_starts_with( $header,'Bearer' )) {
+                if (str_starts_with( $header,'Bearer ' )) {
                     $token = Str::substr( $header,7 );
                 }
             }
