@@ -2,5 +2,5 @@
 
 ## 安装
 ~~~
-composer require yunwuxin/think-auth
+composer require yzh52521/think-auth
 ~~~
