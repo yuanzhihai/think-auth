@@ -1,9 +1,43 @@
 <?php
+//think-auth 配置文件
+
+use yzh52521\auth\controller\ForgotPasswordController;
+use yzh52521\auth\controller\LoginController;
+use yzh52521\auth\controller\RegisterController;
+use yzh52521\auth\controller\ResetPasswordController;
+use yzh52521\auth\model\User;
 
 return [
-    'auth_on'    => 1, // 权限开关
-    'auth_type'  => 1, // 认证方式，1为实时认证；2为登录认证。
-    'auth_user'  => 'user', // 用户信息不带前缀表名
-    'auth_admin' => ['1'],  //超级管理员id
-    'allow'      => ['admin/login'] //白名单
+    'default'          => 'web',
+    'guards'           => [
+        'web' => [
+            'type'     => 'session',
+            'provider' => 'user',
+        ],
+        'api' => [
+            'type'     => 'token',
+            'provider' => 'user',
+        ],
+    ],
+    'providers'        => [
+        'user' => [
+            'type'  => 'model',
+            'model' => User::class,
+        ],
+    ],
+    'password'         => [
+        'provider' => 'user',
+    ],
+    //设为false,则不注册路由
+    'route'            => [
+        'group'       => 'auth',
+        'controllers' => [
+            'login'    => LoginController::class,
+            'register' => RegisterController::class,
+            'forgot'   => ForgotPasswordController::class,
+            'reset'    => ResetPasswordController::class,
+        ],
+    ],
+    'policy_namespace' => '\\app\\policy\\',
+    'policies'         => [],
 ];

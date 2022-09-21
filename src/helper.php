@@ -1,81 +1,15 @@
 <?php
+declare ( strict_types = 1 );
 
-declare(strict_types=1);
+use yzh52521\facade\Gate;
 
-if (!function_exists('auth_check')) {
-    /**
-     * 权限检测快捷方法
-     * @param $name string|array  需要验证的规则列表,支持逗号分隔的权限规则或索引数组
-     * @param $uid  int           认证用户的id
-     * @param int $type 认证类型
-     * @param string $mode 执行check的模式
-     * @param string $relation 如果为 'or' 表示满足任一条规则即通过验证;如果为 'and'则表示需满足所有规则才能通过验证
-     * @return bool 通过验证返回true;失败返回false
-     */
-    function auth_check($name, $uid, $type = 1, $mode = 'url', $relation = 'or')
-    {
-        return \yzh52521\ThinkAuth\Auth::check($name, $uid, $type, $mode, $relation);
-    }
+/**
+ * @param mixed $user
+ * @param string $ability
+ * @param array $args
+ * @return bool
+ */
+function can($user, $ability, ...$args)
+{
+    return Gate::forUser($user)->can($ability, ...$args);
 }
-
-if (!function_exists('get_auth_rules')) {
-    /**
-     * 返回用户的所有规则表
-     * @param int $uid 认证用户的id
-     * @param int $type 认证类型
-     * @return array
-     */
-    function get_auth_rules($uid, $type = 1)
-    {
-        return \yzh52521\ThinkAuth\Auth::rules($uid, $type);
-    }
-}
-
-if (!function_exists('get_auth_role_ids')) {
-    /**
-     * 获取用户所有角色 id
-     * @param $uid
-     * @return mixed
-     */
-    function get_auth_role_ids($uid)
-    {
-        return \yzh52521\ThinkAuth\Auth::roles($uid, 'role_id');
-    }
-}
-
-if (!function_exists('get_auth_roles')) {
-    /**
-     * 获取用户所有角色数据
-     * @param $uid
-     * @return mixed
-     */
-    function get_auth_roles($uid)
-    {
-        return \yzh52521\ThinkAuth\Auth::roles($uid);
-    }
-}
-
-if (!function_exists('get_auth_all_roles')) {
-    /**
-     * 获取用户所有角色及权限数据
-     * @param $uid
-     * @return mixed
-     */
-    function get_auth_all_roles($uid)
-    {
-        return \yzh52521\ThinkAuth\Auth::allRoles($uid);
-    }
-}
-if (!function_exists('has_role')) {
-    /**
-     * 是否有此角色.
-     * @param $uid
-     * @param $role
-     * @return mixed
-     */
-    function has_role($uid,$role)
-    {
-        return \yzh52521\ThinkAuth\Auth::hasRole($uid,$role);
-    }
-}
-

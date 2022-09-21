@@ -1,31 +1,145 @@
 <?php
+declare ( strict_types = 1 );
 
-declare(strict_types=1);
+namespace yzh52521;
 
-namespace yzh52521\ThinkAuth;
+use InvalidArgumentException;
+use think\helper\Arr;
+use think\helper\Str;
+use think\Manager;
+use yzh52521\auth\guard\Session;
+use yzh52521\auth\guard\Token;
+use yzh52521\auth\interfaces\Guard;
+use yzh52521\auth\interfaces\StatefulGuard;
 
 /**
- * auth 权限检测入口
  * Class Auth
- * @package think
- * @method static check($name, $uid, $type = 1, $mode = 'url', $relation = 'or')
- * @method static rules($uid, $type = 1)
- * @method static roles($uid)
- * @method static allRoles($uid)
- * @method static hasRole($uid,$role)
+ * @package yzh52521
+ * @mixin Session
+ * @mixin Token
  */
-class Auth
+class Auth extends Manager
 {
+    protected $namespace = '\\yzh52521\\auth\\guard\\';
+
+    protected $default = null;
+
+    public function shouldUse($name)
+    {
+        $this->default = $name;
+        return $this;
+    }
+
     /**
-     * 静态魔术方法
-     * @param $method
-     * @param $args
+     * @param null $name
+     * @return Guard|StatefulGuard|Session|Token
+     */
+    public function guard($name = null)
+    {
+        return $this->driver($name);
+    }
+
+    /**
+     * 获取配置
+     * @param null|string $name 名称
+     * @param mixed $default 默认值
      * @return mixed
      */
-    public static function __callStatic($method, $args)
+    public function getConfig(string $name = null, $default = null)
     {
-        $model = new \yzh52521\ThinkAuth\service\Auth(app());
+        if (!is_null($name)) {
+            return $this->app->config->get('auth.' . $name, $default);
+        }
 
-        return call_user_func_array([$model, $method], $args);
+        return $this->app->config->get('auth');
+    }
+
+    /**
+     * 获取guard配置
+     * @param string $guard
+     * @param string|null $name
+     * @param null $default
+     * @return mixed
+     */
+    public function getGuardConfig(string $guard, string $name = null, $default = null)
+    {
+        if ($config = $this->getConfig("guards.{$guard}")) {
+            return Arr::get($config, $name, $default);
+        }
+
+        throw new InvalidArgumentException("Guard [$guard] not found.");
+    }
+
+    /**
+     * 获取provider配置
+     * @param string $provider
+     * @param string|null $name
+     * @param null $default
+     * @return mixed
+     */
+    public function getProviderConfig(string $provider, string $name = null, $default = null)
+    {
+        if ($config = $this->getConfig("providers.{$provider}")) {
+            return Arr::get($config, $name, $default);
+        }
+
+        throw new InvalidArgumentException("Provider [$provider] not found.");
+    }
+
+    /**
+     * 获取驱动类型
+     * @param string $name
+     * @return mixed
+     */
+    protected function resolveType(string $name)
+    {
+        return $this->getGuardConfig($name, 'type');
+    }
+
+    /**
+     * 获取驱动配置
+     * @param string $name
+     * @return mixed
+     */
+    protected function resolveConfig(string $name): mixed
+    {
+        return $this->getGuardConfig($name);
+    }
+
+    protected function resolveParams($name): array
+    {
+        $config = $this->resolveConfig($name);
+
+        $providerName = $this->getGuardConfig($name, 'provider');
+
+        $provider = $this->createUserProvider($providerName);
+
+        return [$provider, $config];
+    }
+
+    public function createUserProvider($provider)
+    {
+        $config = $this->getProviderConfig($provider);
+
+        $type = Arr::pull($config, 'type');
+
+        $namespace = '\\yzh52521\\auth\\provider\\';
+
+        $class = false !== strpos($type, '\\') ? $type : $namespace . Str::studly($type);
+
+        if (class_exists($class)) {
+            return $this->app->invokeClass($class, [$config]);
+        }
+
+        throw new InvalidArgumentException("Provider [$type] not supported.");
+    }
+
+    /**
+     * 默认驱动
+     * @return string|null
+     */
+    public function getDefaultDriver(): ?string
+    {
+        return $this->default ?? $this->getConfig('default');
     }
 }
