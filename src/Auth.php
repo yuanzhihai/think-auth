@@ -1,5 +1,4 @@
 <?php
-declare ( strict_types = 1 );
 
 namespace yzh52521;
 
@@ -36,7 +35,7 @@ class Auth extends Manager
      */
     public function guard($name = null)
     {
-        return $this->driver($name);
+        return $this->driver( $name );
     }
 
     /**
@@ -45,13 +44,13 @@ class Auth extends Manager
      * @param mixed $default 默认值
      * @return mixed
      */
-    public function getConfig(string $name = null, $default = null)
+    public function getConfig(string $name = null,$default = null)
     {
-        if (!is_null($name)) {
-            return $this->app->config->get('auth.' . $name, $default);
+        if (!is_null( $name )) {
+            return $this->app->config->get( 'auth.'.$name,$default );
         }
 
-        return $this->app->config->get('auth');
+        return $this->app->config->get( 'auth' );
     }
 
     /**
@@ -61,13 +60,13 @@ class Auth extends Manager
      * @param null $default
      * @return mixed
      */
-    public function getGuardConfig(string $guard, string $name = null, $default = null)
+    public function getGuardConfig(string $guard,string $name = null,$default = null)
     {
-        if ($config = $this->getConfig("guards.{$guard}")) {
-            return Arr::get($config, $name, $default);
+        if ($config = $this->getConfig( "guards.{$guard}" )) {
+            return Arr::get( $config,$name,$default );
         }
 
-        throw new InvalidArgumentException("Guard [$guard] not found.");
+        throw new InvalidArgumentException( "Guard [$guard] not found." );
     }
 
     /**
@@ -77,13 +76,13 @@ class Auth extends Manager
      * @param null $default
      * @return mixed
      */
-    public function getProviderConfig(string $provider, string $name = null, $default = null)
+    public function getProviderConfig(string $provider,string $name = null,$default = null)
     {
-        if ($config = $this->getConfig("providers.{$provider}")) {
-            return Arr::get($config, $name, $default);
+        if ($config = $this->getConfig( "providers.{$provider}" )) {
+            return Arr::get( $config,$name,$default );
         }
 
-        throw new InvalidArgumentException("Provider [$provider] not found.");
+        throw new InvalidArgumentException( "Provider [$provider] not found." );
     }
 
     /**
@@ -93,7 +92,7 @@ class Auth extends Manager
      */
     protected function resolveType(string $name)
     {
-        return $this->getGuardConfig($name, 'type');
+        return $this->getGuardConfig( $name,'type' );
     }
 
     /**
@@ -103,35 +102,35 @@ class Auth extends Manager
      */
     protected function resolveConfig(string $name): mixed
     {
-        return $this->getGuardConfig($name);
+        return $this->getGuardConfig( $name );
     }
 
     protected function resolveParams($name): array
     {
-        $config = $this->resolveConfig($name);
+        $config = $this->resolveConfig( $name );
 
-        $providerName = $this->getGuardConfig($name, 'provider');
+        $providerName = $this->getGuardConfig( $name,'provider' );
 
-        $provider = $this->createUserProvider($providerName);
+        $provider = $this->createUserProvider( $providerName );
 
-        return [$provider, $config];
+        return [$provider,$config];
     }
 
     public function createUserProvider($provider)
     {
-        $config = $this->getProviderConfig($provider);
+        $config = $this->getProviderConfig( $provider );
 
-        $type = Arr::pull($config, 'type');
+        $type = Arr::pull( $config,'type' );
 
         $namespace = '\\yzh52521\\auth\\provider\\';
 
-        $class = false !== strpos($type, '\\') ? $type : $namespace . Str::studly($type);
+        $class = false !== strpos( $type,'\\' ) ? $type : $namespace.Str::studly( $type );
 
-        if (class_exists($class)) {
-            return $this->app->invokeClass($class, [$config]);
+        if (class_exists( $class )) {
+            return $this->app->invokeClass( $class,[$config] );
         }
 
-        throw new InvalidArgumentException("Provider [$type] not supported.");
+        throw new InvalidArgumentException( "Provider [$type] not supported." );
     }
 
     /**
@@ -140,6 +139,6 @@ class Auth extends Manager
      */
     public function getDefaultDriver(): ?string
     {
-        return $this->default ?? $this->getConfig('default');
+        return $this->default ?? $this->getConfig( 'default' );
     }
 }

@@ -1,5 +1,4 @@
 <?php
-declare ( strict_types = 1 );
 
 use yzh52521\facade\Gate;
 
@@ -9,7 +8,7 @@ use yzh52521\facade\Gate;
  * @param array $args
  * @return bool
  */
-function can($user, $ability, ...$args)
+function can($user,$ability,...$args)
 {
-    return Gate::forUser($user)->can($ability, ...$args);
+    return Gate::forUser( $user )->can( $ability,...$args );
 }
