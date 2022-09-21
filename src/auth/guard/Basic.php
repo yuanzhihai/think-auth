@@ -41,7 +41,7 @@ class Basic extends Password
         $header = $this->request->header( 'Authorization' );
 
         if (!empty( $header )) {
-            if (Str::startsWith( $header,'Basic ' )) {
+            if (str_starts_with( $header,'Basic ' )) {
                 $token   = Str::substr( $header,6 );
                 $decoded = base64_decode( $token );
                 [$username,$password] = explode( ':',$decoded );
