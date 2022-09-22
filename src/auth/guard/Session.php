@@ -51,10 +51,10 @@ class Session extends Password implements StatefulGuard
             $user = $this->provider->retrieveById( $id );
         }
 
-        $recaller = $this->getRecaller();
+        $recaller = $this->getRecalled();
 
         if (is_null( $user ) && !is_null( $recaller )) {
-            $user = $this->getUserByRecaller( $recaller );
+            $user = $this->getUserByRecalled( $recaller );
 
             if ($user) {
                 $this->session->set( $this->getName(),$this->provider->getId( $user ) );
@@ -76,17 +76,17 @@ class Session extends Password implements StatefulGuard
         return 'login_'.sha1( static::class );
     }
 
-    public function getRecallerName(): string
+    public function getRecalledName(): string
     {
         return 'remember_'.sha1( static::class );
     }
 
-    protected function getRecaller()
+    protected function getRecalled()
     {
-        return $this->request->cookie( $this->getRecallerName() );
+        return $this->request->cookie( $this->getRecalledName() );
     }
 
-    protected function getUserByRecaller($recalled)
+    protected function getUserByRecalled($recalled)
     {
         if ($this->validRecalled( $recalled ) && !$this->tokenRetrievalAttempted) {
             $this->tokenRetrievalAttempted = true;
@@ -184,8 +184,8 @@ class Session extends Password implements StatefulGuard
     {
         $this->session->delete( $this->getName() );
 
-        if (!is_null( $this->getRecaller() )) {
-            $recalled = $this->getRecallerName();
+        if (!is_null( $this->getRecalled() )) {
+            $recalled = $this->getRecalledName();
             $this->cookie->delete( $recalled );
         }
     }
@@ -205,7 +205,7 @@ class Session extends Password implements StatefulGuard
     protected function createRecalled($user)
     {
         $value = $this->provider->getId( $user ).'|'.$this->provider->getRememberToken( $user );
-        $this->cookie->forever( $this->getRecallerName(),$value );
+        $this->cookie->forever( $this->getRecalledName(),$value );
     }
 
 }
