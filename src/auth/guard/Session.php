@@ -51,10 +51,10 @@ class Session extends Password implements StatefulGuard
             $user = $this->provider->retrieveById( $id );
         }
 
-        $recaller = $this->getRecalled();
+        $recalled = $this->getRecalled();
 
-        if (is_null( $user ) && !is_null( $recaller )) {
-            $user = $this->getUserByRecalled( $recaller );
+        if (is_null( $user ) && !is_null( $recalled )) {
+            $user = $this->getUserByRecalled( $recalled );
 
             if ($user) {
                 $this->session->set( $this->getName(),$this->provider->getId( $user ) );
