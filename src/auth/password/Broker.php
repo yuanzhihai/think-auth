@@ -22,15 +22,12 @@ class Broker
      */
     protected Closure $passwordValidator;
 
-    /** @var Token */
-    protected Token $token;
 
     /** @var Auth */
     protected Auth $auth;
 
-    public function __construct(App $app,\yzh52521\Auth $auth,Token $token)
+    public function __construct(App $app,\yzh52521\Auth $auth,protected Token $token)
     {
-        $this->token    = $token;
         $this->provider = $auth->createUserProvider( $app->config->get( 'auth.password.provider' ) );
     }
 

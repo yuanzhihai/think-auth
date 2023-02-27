@@ -14,12 +14,10 @@ class Token implements Guard
 {
     use GuardHelpers;
 
-    protected $request;
 
-    public function __construct(Request $request,Provider $provider)
+    public function __construct(protected Request $request,Provider $provider)
     {
         $this->provider = $provider;
-        $this->request  = $request;
     }
 
     /**

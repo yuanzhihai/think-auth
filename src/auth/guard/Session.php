@@ -24,20 +24,8 @@ class Session extends Password implements StatefulGuard
 
     protected $tokenRetrievalAttempted = false;
 
-    protected $session;
-
-    protected $event;
-
-    protected $cookie;
-
-    protected $request;
-
-    public function __construct(StatefulProvider $provider,\think\Session $session,Event $event,Cookie $cookie,Request $request)
+    public function __construct(StatefulProvider $provider,protected \think\Session $session,protected Event $event,protected Cookie $cookie,protected Request $request)
     {
-        $this->session = $session;
-        $this->event   = $event;
-        $this->cookie  = $cookie;
-        $this->request = $request;
         parent::__construct( $provider );
     }
 

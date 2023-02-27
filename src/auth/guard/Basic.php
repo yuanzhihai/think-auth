@@ -10,12 +10,10 @@ use yzh52521\auth\interfaces\Provider;
 
 class Basic extends Password
 {
-    protected $request;
 
-    public function __construct(Provider $provider,Request $request)
+    public function __construct(Provider $provider,protected Request $request)
     {
         parent::__construct( $provider );
-        $this->request = $request;
     }
 
     public function authenticate()

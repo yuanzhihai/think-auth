@@ -7,11 +7,9 @@ use yzh52521\Auth;
 
 class UseGuard
 {
-    protected $auth;
 
-    public function __construct(Auth $auth)
+    public function __construct(protected Auth $auth)
     {
-        $this->auth = $auth;
     }
 
     public function handle($request,Closure $next,$guard)

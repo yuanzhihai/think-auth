@@ -13,25 +13,12 @@ use yzh52521\auth\traits\AuthorizableUser as User;
 
 class Gate
 {
-    protected $app;
 
-    /**
-     * @var callable
-     */
-    protected $userResolver;
-
-    protected $policies;
-
-    protected $policyNamespace;
 
     protected static $instance = [];
 
-    public function __construct(App $app,callable $userResolver,array $policies = [],string $policyNamespace = null)
+    public function __construct(protected App $app,protected $userResolver,protected array $policies,protected string $policyNamespace)
     {
-        $this->app             = $app;
-        $this->userResolver    = $userResolver;
-        $this->policies        = $policies;
-        $this->policyNamespace = $policyNamespace;
     }
 
     /**

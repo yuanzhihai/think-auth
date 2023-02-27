@@ -10,14 +10,8 @@ use yzh52521\notification\Notifiable;
 class ResetPassword extends Notification implements ShouldQueue
 {
 
-    public $token;
-
-    public $email;
-
-    public function __construct($email,$token)
+    public function __construct(public $email,public $token)
     {
-        $this->email = $email;
-        $this->token = $token;
     }
 
     /**

@@ -17,11 +17,8 @@ use yzh52521\auth\interfaces\Authorizable;
 class Authorization
 {
 
-    protected $auth;
-
-    public function __construct(Auth $auth)
+    public function __construct(protected Auth $auth)
     {
-        $this->auth = $auth;
     }
 
     /**

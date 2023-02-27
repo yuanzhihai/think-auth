@@ -4,16 +4,12 @@ namespace yzh52521\auth;
 
 class Role
 {
-    /** @var array 权限列表 */
-    protected array $permissions = [];
-
-    /** @var string 角色名称 */
-    protected string $name;
-
-    public function __construct($name,$permissions = [])
+    /**
+     * @param string $name   角色名称
+     * @param array $permissions 权限列表
+     */
+    public function __construct(protected string $name,protected  array $permissions = [])
     {
-        $this->name        = $name;
-        $this->permissions = $permissions;
     }
 
     public function getName()

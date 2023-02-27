@@ -8,11 +8,9 @@ use yzh52521\auth\exception\AuthorizationException;
 
 class Authorize
 {
-    protected $auth;
 
-    public function __construct(Auth $auth)
+    public function __construct(protected Auth $auth)
     {
-        $this->auth = $auth;
     }
 
     public function handle($request,Closure $next,$ability,...$args)

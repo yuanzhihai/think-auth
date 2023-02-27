@@ -6,13 +6,7 @@ namespace yzh52521\auth\event;
 class Login
 {
 
-    public $user;
-
-    public $remember;
-
-    public function __construct($user,$remember)
+    public function __construct(public $user,public $remember)
     {
-        $this->user     = $user;
-        $this->remember = $remember;
     }
 }

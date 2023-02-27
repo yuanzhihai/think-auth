@@ -9,11 +9,9 @@ use yzh52521\auth\interfaces\CanResetPassword;
 class Token
 {
 
-    protected Cache $cache;
 
-    public function __construct(Cache $cache)
+    public function __construct(protected Cache $cache)
     {
-        $this->cache = $cache;
     }
 
     public function create(CanResetPassword $user): string
