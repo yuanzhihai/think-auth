@@ -17,7 +17,7 @@ class Model implements StatefulProvider
         'remember_token' => 'remember_token',
     ];
 
-    public function initialize($config)
+    public function __construct($config)
     {
         $this->model  = Arr::get( $config,'model',User::class );
         $this->fields = array_merge( $this->fields,Arr::get( $config,'fields',[] ) );
