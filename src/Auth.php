@@ -10,7 +10,6 @@ use yzh52521\auth\guard\Session;
 use yzh52521\auth\guard\Token;
 use yzh52521\auth\interfaces\Guard;
 use yzh52521\auth\interfaces\StatefulGuard;
-use yzh52521\auth\provider\Model;
 
 /**
  * Class Auth
