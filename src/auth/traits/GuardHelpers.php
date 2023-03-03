@@ -30,6 +30,22 @@ trait GuardHelpers
         return $this->user = $this->retrieveUser();
     }
 
+    public function id()
+    {
+        return $this->user() ? $this->provider->getId( $this->user ) : $this->session->get( $this->getName() );
+    }
+
+    public function hasUser()
+    {
+        return !is_null( $this->user );
+    }
+
+
+    public function guest()
+    {
+        return !$this->check();
+    }
+
     protected function retrieveUser()
     {
         return null;

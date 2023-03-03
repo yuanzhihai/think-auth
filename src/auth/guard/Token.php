@@ -15,7 +15,9 @@ class Token implements Guard
     use GuardHelpers;
 
 
-    public function __construct(protected Request $request,Provider $provider)
+    public function __construct(
+        protected Request $request,
+        Provider          $provider)
     {
         $this->provider = $provider;
     }

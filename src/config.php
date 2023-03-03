@@ -11,18 +11,18 @@ return [
     'default'          => 'web',
     'guards'           => [
         'web' => [
-            'type'     => 'session',
+            'driver'   => 'session',
             'provider' => 'user',
         ],
         'api' => [
-            'type'     => 'token',
+            'driver'   => 'token',
             'provider' => 'user',
         ],
     ],
     'providers'        => [
         'user' => [
-            'type'  => 'model',
-            'model' => User::class,
+            'driver' => 'model',
+            'model'  => User::class,
         ],
     ],
     'password'         => [

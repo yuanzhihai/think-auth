@@ -120,6 +120,39 @@ class Session extends Password implements StatefulGuard
     }
 
     /**
+     * 通过id获取认证用户
+     * @param mixed $id
+     * @param bool $remember
+     * @return false|mixed
+     */
+    public function loginUsingId($id,$remember = false)
+    {
+        if (!is_null( $user = $this->provider->retrieveById( $id ) )) {
+            $this->login( $user,$remember );
+
+            return $user;
+        }
+
+        return false;
+    }
+
+    /**
+     * 只验证一次 通过用户id
+     *
+     * @param mixed $id
+     * @return mixed|false
+     */
+    public function onceUsingId($id)
+    {
+        if (!is_null( $user = $this->provider->retrieveById( $id ) )) {
+            $this->setUser( $user );
+
+            return $user;
+        }
+        return false;
+    }
+
+    /**
      * 设置登录用户
      *
      * @param mixed $user

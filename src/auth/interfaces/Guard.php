@@ -13,6 +13,26 @@ interface Guard
     public function authenticate();
 
     /**
+     * 是否用户
+     *
+     * @return bool
+     */
+    public function hasUser();
+
+    /**
+     * 当前用户是否为访客
+     *
+     * @return bool
+     */
+    public function guest();
+    /**
+     * 获取当前已验证用户的ID
+     *
+     * @return int|null
+     */
+    public function id();
+
+    /**
      * 是否通过认证
      *
      * @return bool

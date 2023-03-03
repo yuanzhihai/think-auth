@@ -10,6 +10,7 @@ use yzh52521\auth\guard\Session;
 use yzh52521\auth\guard\Token;
 use yzh52521\auth\interfaces\Guard;
 use yzh52521\auth\interfaces\StatefulGuard;
+use yzh52521\auth\provider\Model;
 
 /**
  * Class Auth
@@ -92,8 +93,9 @@ class Auth extends Manager
      */
     protected function resolveType(string $name)
     {
-        return $this->getGuardConfig( $name,'type' );
+        return $this->getGuardConfig( $name,'driver' );
     }
+
 
     /**
      * 获取驱动配置
@@ -109,6 +111,7 @@ class Auth extends Manager
     {
         $config = $this->resolveConfig( $name );
 
+
         $providerName = $this->getGuardConfig( $name,'provider' );
 
         $provider = $this->createUserProvider( $providerName );
@@ -120,17 +123,17 @@ class Auth extends Manager
     {
         $config = $this->getProviderConfig( $provider );
 
-        $type = Arr::pull( $config,'type' );
+        $driver = Arr::get( $config,'driver' );
 
         $namespace = '\\yzh52521\\auth\\provider\\';
 
-        $class = false !== strpos( $type,'\\' ) ? $type : $namespace.Str::studly( $type );
+        $class = str_contains( $driver,'\\' ) ? $driver : $namespace . Str::studly($driver);
 
         if (class_exists( $class )) {
             return $this->app->invokeClass( $class,[$config] );
         }
 
-        throw new InvalidArgumentException( "Provider [$type] not supported." );
+        throw new InvalidArgumentException( "Provider [$driver] not supported." );
     }
 
     /**
