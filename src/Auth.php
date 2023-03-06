@@ -3,8 +3,8 @@
 namespace yzh52521;
 
 use InvalidArgumentException;
+use think\App;
 use think\helper\Arr;
-use think\Manager;
 use yzh52521\auth\guard\Session;
 use yzh52521\auth\guard\Token;
 use yzh52521\auth\interfaces\Guard;
@@ -16,8 +16,11 @@ use yzh52521\auth\interfaces\StatefulGuard;
  * @mixin Session
  * @mixin Token
  */
-class Auth extends Manager
+class Auth
 {
+
+    /** @var App */
+    protected $app;
 
     protected $default = null;
 
@@ -27,9 +30,15 @@ class Auth extends Manager
 
     protected $guards = [];
 
+    public function __construct(App $app)
+    {
+        $this->app = $app;
+    }
+
     public function shouldUse($name)
     {
         $this->default = $name;
+
         return $this;
     }
 
@@ -211,5 +220,10 @@ class Auth extends Manager
     public function getDefaultDriver(): ?string
     {
         return $this->default ?? $this->getConfig( 'default' );
+    }
+
+    public function __call($method,$parameters)
+    {
+        return $this->guard()->$method( ...$parameters );
     }
 }
