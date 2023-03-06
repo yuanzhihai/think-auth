@@ -120,7 +120,7 @@ class Session extends Password implements StatefulGuard
     }
 
     /**
-     * 通过id获取认证用户
+     * 通过id设置认证用户
      * @param mixed $id
      * @param bool $remember
      * @return false|mixed
@@ -137,7 +137,26 @@ class Session extends Password implements StatefulGuard
     }
 
     /**
-     * 只验证一次 通过用户id
+     * 只验证一次
+     * @param array $credentials
+     * @return bool
+     */
+    public function once(array $credentials)
+    {
+        if (!$credentials instanceof BaseCredentials) {
+            $credentials = PasswordCredential::fromArray( $credentials );
+        }
+        if ($this->validate( $credentials )) {
+            $this->setUser( $this->lastValidated );
+            return true;
+        }
+
+        return false;
+    }
+
+
+    /**
+     * 在没有会话或cookie的情况下，将给定的用户ID登录认证用户
      *
      * @param mixed $id
      * @return mixed|false

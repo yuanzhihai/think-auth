@@ -33,12 +33,15 @@ Auth常用方法
 Auth::attempt(['username' => 'tp5er@qq.com', 'password' => '123456'], $remember = true);
 //通过用户实例登录 
 Auth::login(User::find(1), $remember = false);
+//只验证一次
+Auth::once(['username' => 'tp5er@qq.com', 'password' => '123456'])
+
 //通过id登录
 Auth::loginUsingId(1,$remember = false)
-
-
-通过id获取认证用户
+在没有会话或cookie的情况下，将给定的用户ID登录认证用户
 Auth::onceUsingId(1);
+
+
 // 获取当前的认证用户信息 ...
 $user = Auth::user();
 // 获取当前的认证用户id ...
