@@ -22,6 +22,7 @@ class Auth
     /** @var App */
     protected $app;
 
+    protected $default = null;
     protected $customProviderCreators = [];
 
     protected $customCreators = [];
@@ -31,6 +32,13 @@ class Auth
     public function __construct(App $app)
     {
         $this->app = $app;
+    }
+
+    public function shouldUse($name)
+    {
+        $this->default = $name;
+
+        return $this;
     }
 
     /**
@@ -178,7 +186,7 @@ class Auth
      */
     public function getDefaultDriver(): ?string
     {
-       $this->getConfig( 'default' );
+        return $this->default ?? $this->getConfig( 'default' );
     }
 
     public function __call($method,$parameters)
