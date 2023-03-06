@@ -145,38 +145,6 @@ class Auth
         throw new InvalidArgumentException( "Provider [$provider] not found." );
     }
 
-    /**
-     * 获取驱动类型
-     * @param string $name
-     * @return mixed
-     */
-    protected function resolveType(string $name)
-    {
-        return $this->getGuardConfig( $name,'driver' );
-    }
-
-
-    /**
-     * 获取驱动配置
-     * @param string $name
-     * @return mixed
-     */
-    protected function resolveConfig(string $name): mixed
-    {
-        return $this->getGuardConfig( $name );
-    }
-
-    protected function resolveParams($name): array
-    {
-        $config = $this->resolveConfig( $name );
-
-
-        $providerName = $this->getGuardConfig( $name,'provider' );
-
-        $provider = $this->createUserProvider( $providerName );
-
-        return [$provider,$config];
-    }
 
     public function createUserProvider($provider)
     {
