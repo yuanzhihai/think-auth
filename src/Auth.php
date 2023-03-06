@@ -4,7 +4,6 @@ namespace yzh52521;
 
 use InvalidArgumentException;
 use think\helper\Arr;
-use think\helper\Str;
 use think\Manager;
 use yzh52521\auth\guard\Session;
 use yzh52521\auth\guard\Token;
@@ -22,6 +21,8 @@ class Auth extends Manager
     protected $namespace = '\\yzh52521\\auth\\guard\\';
 
     protected $default = null;
+
+    protected $customProviderCreators = [];
 
     public function shouldUse($name)
     {
@@ -120,13 +121,17 @@ class Auth extends Manager
 
     public function createUserProvider($provider)
     {
-        $config = $this->getProviderConfig( $provider );
+        if (is_null( $config = $this->getProviderConfig( $provider ) )) {
+            return;
+        }
 
-        $driver = Arr::get( $config,'driver' );
+        if (isset( $this->customProviderCreators[$driver = ( $config['driver'] ?? null )] )) {
+            return call_user_func(
+                $this->customProviderCreators[$driver],$this->app,$config
+            );
+        }
 
-        $namespace = '\\yzh52521\\auth\\provider\\';
-
-        $class = str_contains( $driver,'\\' ) ? $driver : $namespace . Str::studly($driver);
+        $class = str_contains( $driver,'\\' ) ? $driver : '\\yzh52521\\auth\\provider\\ModelUserProvider';
 
         if (class_exists( $class )) {
             return $this->app->invokeClass( $class,[$config] );

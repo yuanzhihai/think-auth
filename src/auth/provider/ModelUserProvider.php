@@ -7,7 +7,7 @@ use yzh52521\auth\credentials\PasswordCredential;
 use yzh52521\auth\interfaces\StatefulProvider;
 use yzh52521\auth\model\User;
 
-class Model implements StatefulProvider
+class ModelUserProvider implements StatefulProvider
 {
 
     protected $model;

@@ -16,7 +16,6 @@ interface StatefulGuard extends Guard
      *
      * @param mixed $user
      * @param bool $remember
-     * @return void
      */
     public function login($user,$remember = false);
 
