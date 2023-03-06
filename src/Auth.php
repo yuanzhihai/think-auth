@@ -18,11 +18,14 @@ use yzh52521\auth\interfaces\StatefulGuard;
  */
 class Auth extends Manager
 {
-    protected $namespace = '\\yzh52521\\auth\\guard\\';
 
     protected $default = null;
 
     protected $customProviderCreators = [];
+
+    protected $customCreators = [];
+
+    protected $guards = [];
 
     public function shouldUse($name)
     {
@@ -36,7 +39,54 @@ class Auth extends Manager
      */
     public function guard($name = null)
     {
-        return $this->driver( $name );
+        $name = $name ?: $this->getDefaultDriver();
+
+        return $this->guards[$name] ?? $this->guards[$name] = $this->resolve( $name );
+    }
+
+    protected function resolve($name)
+    {
+        $config = $this->getGuardConfig( $name );
+
+        if (is_null( $config )) {
+            throw new InvalidArgumentException( "Auth guard [{$name}] is not defined." );
+        }
+
+        if (isset( $this->customCreators[$config['driver']] )) {
+            return $this->callCustomCreator( $name,$config );
+        }
+
+
+        $driverMethod = 'create'.ucfirst( $config['driver'] ).'Driver';
+
+        if (method_exists( $this,$driverMethod )) {
+            return $this->{$driverMethod}( $config );
+        }
+
+        throw new InvalidArgumentException(
+            "Auth driver [{$config['driver']}] for guard [{$name}] is not defined."
+        );
+    }
+
+    public function createSessionDriver($config)
+    {
+        $provider = $this->createUserProvider( $config['provider'] ?? null );
+
+        return new Session(
+            $provider,
+            $this->app->session,
+            $this->app->event,
+            $this->app->cookie,
+            $this->app->request
+        );
+    }
+
+    public function createTokenDriver($config)
+    {
+        return new Token(
+            $this->app->request,
+            $this->createUserProvider( $config['provider'] ?? null )
+        );
     }
 
     /**
@@ -139,6 +189,20 @@ class Auth extends Manager
 
         throw new InvalidArgumentException( "Provider [$driver] not supported." );
     }
+
+    protected function callCustomCreator($name,array $config)
+    {
+        return $this->customCreators[$config['driver']]( $this->app,$name,$config );
+    }
+
+
+    public function extend($driver,\Closure $callback)
+    {
+        $this->customCreators[$driver] = $callback;
+
+        return $this;
+    }
+
 
     /**
      * 默认驱动

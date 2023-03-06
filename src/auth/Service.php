@@ -3,6 +3,7 @@
 namespace yzh52521\auth;
 
 use think\Route;
+use yzh52521\Auth;
 
 class Service extends \think\Service
 {
@@ -31,5 +32,10 @@ class Service extends \think\Service
                 } );
             } );
         }
+    }
+
+    public function register()
+    {
+        $this->app->bind( 'auth',Auth::class );
     }
 }
