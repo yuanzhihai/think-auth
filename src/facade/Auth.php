@@ -14,6 +14,6 @@ class Auth extends Facade
 {
     protected static function getFacadeClass()
     {
-        return \yzh52521\Auth::class;
+        return 'auth';
     }
 }

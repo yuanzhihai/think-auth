@@ -14,6 +14,6 @@ class Gate extends Facade
 {
     protected static function getFacadeClass()
     {
-        return \yzh52521\auth\Gate::class;
+        return 'gate';
     }
 }

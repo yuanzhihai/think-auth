@@ -37,5 +37,6 @@ class Service extends \think\Service
     public function register()
     {
         $this->app->bind( 'auth',Auth::class );
+        $this->app->bind( 'gate',Gate::class );
     }
 }
